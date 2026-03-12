@@ -1,0 +1,9 @@
+{
+  "name": "linfanghao-homepage",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "new:post": "python3 ./scripts/new_post.py",
+    "new:photo": "python3 ./scripts/new_photo.py"
+  }
+}

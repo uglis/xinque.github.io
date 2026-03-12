@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>林方浩 · 照片</title>
+    <meta name="description" content="林方浩的照片分享页。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-radial" aria-hidden="true"></div>
+
+    <header class="header">
+      <a class="logo" href="./index.html">林方浩</a>
+      <nav aria-label="站点导航">
+        <a href="./index.html">首页</a>
+        <a href="./posts.html">文章</a>
+        <a href="./photos.html">照片</a>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-main">
+      <section class="panel reveal-target">
+        <div class="panel-head">
+          <p class="kicker">PHOTOS</p>
+          <h1>照片</h1>
+        </div>
+        <p>这里用于发布你的日常摄影或作品图片。把图片放在 `images/`，然后在 `data/photos.json` 里加一条记录即可展示。</p>
+      </section>
+
+      <section id="photos-list" class="photo-grid reveal-target" aria-live="polite"></section>
+    </main>
+
+    <footer class="footer">© <span id="year"></span> 林方浩 · All Rights Reserved</footer>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>

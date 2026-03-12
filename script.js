@@ -6,14 +6,19 @@ const postDetail = document.getElementById("post-detail");
 const postsSearch = document.getElementById("posts-search");
 const postsTags = document.getElementById("posts-tags");
 const postsResultStatus = document.getElementById("posts-result-status");
+const postsFilters = document.querySelector(".posts-filters");
+
+if (postsFilters instanceof HTMLElement) {
+  postsFilters.classList.add("visible");
+}
 
 const escapeHtml = (value) =>
   String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 if (currentYear) {
   currentYear.textContent = String(new Date().getFullYear());
@@ -45,6 +50,8 @@ if (!reducedMotion && "IntersectionObserver" in window) {
 
 const renderPosts = async () => {
   if (!postsList) return;
+
+  postsList.classList.add("visible");
 
   try {
     const response = await fetch("./data/posts.json");
@@ -338,7 +345,40 @@ const initPhotoLightbox = () => {
   });
 };
 
+const initPortraitLightbox = () => {
+  const portraitCard = document.querySelector(".portrait-preview");
+  if (!(portraitCard instanceof HTMLElement)) return;
+
+  const { lightbox, openLightbox } = ensureLightbox();
+  const lightboxImage = lightbox.querySelector(".lightbox-image");
+  const lightboxCaption = lightbox.querySelector(".lightbox-caption");
+
+  const openPortrait = () => {
+    const src = portraitCard.getAttribute("data-portrait-src");
+    const title = portraitCard.getAttribute("data-portrait-title") || "证件照";
+    const description = portraitCard.getAttribute("data-portrait-description") || "";
+
+    if (!src) return;
+
+    lightboxImage.src = src;
+    lightboxImage.alt = title;
+    lightboxCaption.textContent = description ? `${title} · ${description}` : title;
+    openLightbox();
+  };
+
+  portraitCard.addEventListener("click", () => {
+    openPortrait();
+  });
+
+  portraitCard.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openPortrait();
+  });
+};
+
 renderPosts();
 renderPhotos();
 renderPostDetail();
 initPhotoLightbox();
+initPortraitLightbox();

@@ -143,10 +143,20 @@ main {
   justify-self: end;
 }
 
+.portrait-preview {
+  cursor: zoom-in;
+}
+
+.portrait-preview:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .portrait-image {
   width: 100%;
   height: clamp(220px, 30vw, 320px);
   object-fit: cover;
+  object-position: center 18%;
   border-radius: 12px;
   display: block;
 }
@@ -295,6 +305,11 @@ h1 {
 .posts-filters {
   display: grid;
   gap: 14px;
+}
+
+.posts-filters.reveal-target {
+  opacity: 1;
+  transform: none;
 }
 
 .search-label {
@@ -544,6 +559,13 @@ section[id] {
   .portrait-card {
     width: min(260px, 100%);
     justify-self: start;
+  }
+
+  .portrait-image {
+    height: clamp(220px, 72vw, 360px);
+    object-fit: contain;
+    object-position: center top;
+    background: rgba(8, 12, 20, 0.92);
   }
 
   .projects {

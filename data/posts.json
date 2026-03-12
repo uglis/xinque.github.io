@@ -1,5 +1,16 @@
 [
   {
+    "slug": "my-markdown-post",
+    "title": "我的 Markdown 文章",
+    "date": "2026-03-12",
+    "summary": "this is my first post",
+    "tags": [
+      "TODO"
+    ],
+    "content_markdown": "# 第一篇\n没啥想说的",
+    "cover": "./images/cover.jpg"
+  },
+  {
     "slug": "blog-launch",
     "title": "我的博客正式上线",
     "date": "2026-03-12",

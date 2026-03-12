@@ -107,12 +107,35 @@ npm run publish:md -- \
   --cover "./images/cover.jpg"
 ```
 
+你也可以把元信息直接写到 Markdown 头部（frontmatter），然后用最短命令发布：
+
+```md
+---
+title: 我的 Markdown 文章
+date: 2026-03-12
+summary: 一句话摘要
+slug: my-markdown-post
+cover: ./images/cover.jpg
+tags:
+  - 产品
+  - 工程
+---
+
+# 正文标题
+
+这是正文第一段。
+```
+
+```bash
+npm run publish:md -- --file "posts/my-first-post.md"
+```
+
 说明：
 
 - `--summary` 可选，不填会自动从 Markdown 前文提取摘要
-- `--date` 可选，默认当天
-- `--slug` 可选，不填会按标题自动生成
-- `--tags` 支持空格分隔，也支持逗号形式（例如 `"产品,工程"`）
+- `--date` 可选，优先使用命令参数，其次 frontmatter，最后默认当天
+- `--slug` 可选，不填时优先 frontmatter，再按标题自动生成
+- `--tags` 可选：命令参数与 frontmatter 会合并去重
 
 当前已支持的 Markdown 语法（在文章详情页渲染）：
 

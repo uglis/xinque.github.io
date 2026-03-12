@@ -24,6 +24,60 @@ def strip_frontmatter(markdown_text: str) -> str:
     return markdown_text
 
 
+def extract_frontmatter(markdown_text: str) -> tuple[dict[str, str | list[str]], str]:
+    if not markdown_text.startswith("---\n"):
+        return {}, markdown_text
+
+    parts = markdown_text.split("\n---\n", 1)
+    if len(parts) != 2:
+        return {}, markdown_text
+
+    raw_fm = parts[0].replace("---\n", "", 1).strip()
+    body = parts[1].lstrip()
+    data: dict[str, str | list[str]] = {}
+    current_list_key = ""
+
+    for raw_line in raw_fm.split("\n"):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+
+        if current_list_key and line.startswith("- "):
+            existing = data.get(current_list_key)
+            if isinstance(existing, list):
+                item = line[2:].strip().strip('"').strip("'")
+                if item:
+                    existing.append(item)
+            continue
+
+        current_list_key = ""
+        if ":" not in line:
+            continue
+
+        key, raw_value = line.split(":", 1)
+        key = key.strip().lower()
+        value = raw_value.strip()
+
+        if not value:
+            data[key] = []
+            current_list_key = key
+            continue
+
+        if value.startswith("[") and value.endswith("]"):
+            inner = value[1:-1].strip()
+            if not inner:
+                data[key] = []
+            else:
+                items = [part.strip().strip('"').strip("'") for part in inner.split(",")]
+                data[key] = [item for item in items if item]
+            continue
+
+        cleaned = value.strip('"').strip("'")
+        data[key] = cleaned
+
+    return data, body
+
+
 def markdown_summary(markdown_text: str, max_len: int = 90) -> str:
     plain = re.sub(r"```[\s\S]*?```", "", markdown_text)
     plain = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", plain)
@@ -48,8 +102,8 @@ def parse_tags(raw_tags: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Publish markdown file to posts.json")
     parser.add_argument("--file", required=True, help="Markdown file path")
-    parser.add_argument("--title", required=True, help="Post title")
-    parser.add_argument("--date", default=date.today().isoformat(), help="Post date (YYYY-MM-DD)")
+    parser.add_argument("--title", help="Post title (optional if provided in frontmatter)")
+    parser.add_argument("--date", help="Post date (YYYY-MM-DD), defaults to frontmatter or today")
     parser.add_argument("--summary", default="", help="Post summary (optional, auto-generate if omitted)")
     parser.add_argument("--slug", help="Custom slug")
     parser.add_argument("--cover", default="", help="Cover image URL/path")
@@ -64,13 +118,32 @@ def main() -> None:
     if not md_path.exists():
         raise FileNotFoundError(f"Markdown file not found: {md_path}")
 
-    markdown_text = md_path.read_text(encoding="utf-8")
-    markdown_text = strip_frontmatter(markdown_text).strip()
+    markdown_text_raw = md_path.read_text(encoding="utf-8")
+    frontmatter, markdown_body = extract_frontmatter(markdown_text_raw)
+    markdown_text = strip_frontmatter(markdown_body).strip()
+
+    title = (args.title or str(frontmatter.get("title", "")).strip())
+    if not title:
+        raise ValueError("Missing title: provide --title or add title in markdown frontmatter")
+
+    post_date = (args.date or str(frontmatter.get("date", "")).strip() or date.today().isoformat())
+
+    cover = args.cover.strip() or str(frontmatter.get("cover", "")).strip()
+    cli_tags = parse_tags(args.tags)
+    fm_tags_raw = frontmatter.get("tags", [])
+    fm_tags = fm_tags_raw if isinstance(fm_tags_raw, list) else parse_tags([str(fm_tags_raw)])
+    tags = list(dict.fromkeys([*cli_tags, *fm_tags]))
+
+    summary = (
+        args.summary.strip()
+        or str(frontmatter.get("summary", "")).strip()
+        or markdown_summary(markdown_text)
+    )
 
     with posts_path.open("r", encoding="utf-8") as file:
         posts = json.load(file)
 
-    slug = args.slug or slugify(args.title)
+    slug = args.slug or str(frontmatter.get("slug", "")).strip() or slugify(title)
     used_slugs = {item.get("slug", "") for item in posts}
 
     if slug in used_slugs:
@@ -81,17 +154,14 @@ def main() -> None:
             candidate = f"{slug}-{suffix}"
         slug = candidate
 
-    tags = parse_tags(args.tags)
-    summary = args.summary.strip() or markdown_summary(markdown_text)
-
     new_post = {
         "slug": slug,
-        "title": args.title,
-        "date": args.date,
+        "title": title,
+        "date": post_date,
         "summary": summary,
         "tags": tags,
         "content_markdown": markdown_text,
-        "cover": args.cover,
+        "cover": cover,
     }
 
     posts.insert(0, new_post)

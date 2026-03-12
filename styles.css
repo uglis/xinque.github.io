@@ -436,10 +436,34 @@ h1 {
 
 .article-cover {
   width: 100%;
-  height: clamp(220px, 42vw, 420px);
-  object-fit: cover;
+  max-height: min(70vh, 680px);
+  height: auto;
+  object-fit: contain;
+  object-position: center;
   border-radius: 14px;
   margin-top: 16px;
+  background: rgba(8, 12, 20, 0.92);
+}
+
+.article-zoomable {
+  cursor: zoom-in;
+}
+
+.article-zoomable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.article-image {
+  display: block;
+  width: 100%;
+  max-height: min(70vh, 680px);
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 12px;
+  margin: 12px 0 16px;
+  background: rgba(8, 12, 20, 0.92);
 }
 
 .article-content {

@@ -22,6 +22,10 @@ const escapeHtml = (value) =>
 
 const parseInlineMarkdown = (value) =>
   escapeHtml(value)
+    .replace(
+      /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|\.\/?[^\s)]+)\)/g,
+      '<img class="article-image" src="$2" alt="$1" loading="lazy" />'
+    )
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a class="list-link" href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
@@ -340,7 +344,7 @@ const renderPostDetail = async () => {
           : `<p>${escapeHtml(post.summary)}</p>`;
 
     const cover = post.cover
-      ? `<img class="article-cover" src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.title)}" loading="lazy" />`
+      ? `<img class="article-cover article-zoomable" src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.title)}" loading="lazy" data-article-img-src="${escapeHtml(post.cover)}" data-article-img-title="${escapeHtml(post.title)}" data-article-img-description="封面原图" />`
       : "";
 
     const tags = Array.isArray(post.tags)
@@ -361,6 +365,20 @@ const renderPostDetail = async () => {
       <div class="article-content">${content}</div>
       <p><a class="list-link" href="./posts.html">← 返回文章列表</a></p>
     `;
+
+    const articleImages = postDetail.querySelectorAll(".article-content img");
+    articleImages.forEach((image) => {
+      if (!(image instanceof HTMLImageElement)) return;
+      const src = image.getAttribute("src");
+      if (!src) return;
+      image.classList.add("article-image", "article-zoomable");
+      image.setAttribute("tabindex", "0");
+      image.setAttribute("role", "button");
+      image.setAttribute("data-article-img-src", src);
+      image.setAttribute("data-article-img-title", image.getAttribute("alt") || post.title || "文章图片");
+      image.setAttribute("data-article-img-description", "点击查看原图");
+      image.setAttribute("aria-label", `查看原图：${image.getAttribute("alt") || post.title || "文章图片"}`);
+    });
   } catch (error) {
     postDetail.innerHTML = '<p>文章加载失败，请稍后重试。</p>';
   }
@@ -493,8 +511,49 @@ const initPortraitLightbox = () => {
   });
 };
 
+const initArticleLightbox = () => {
+  if (!postDetail) return;
+
+  const { lightbox, openLightbox } = ensureLightbox();
+  const lightboxImage = lightbox.querySelector(".lightbox-image");
+  const lightboxCaption = lightbox.querySelector(".lightbox-caption");
+
+  const openFromImage = (element) => {
+    if (!(element instanceof HTMLElement)) return;
+
+    const src = element.getAttribute("data-article-img-src");
+    const title = element.getAttribute("data-article-img-title") || "文章图片";
+    const description = element.getAttribute("data-article-img-description") || "";
+
+    if (!src) return;
+
+    lightboxImage.src = src;
+    lightboxImage.alt = title;
+    lightboxCaption.textContent = description ? `${title} · ${description}` : title;
+    openLightbox();
+  };
+
+  postDetail.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const image = target.closest(".article-zoomable");
+    openFromImage(image);
+  });
+
+  postDetail.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const image = target.closest(".article-zoomable");
+    if (!image) return;
+    event.preventDefault();
+    openFromImage(image);
+  });
+};
+
 renderPosts();
 renderPhotos();
 renderPostDetail();
 initPhotoLightbox();
 initPortraitLightbox();
+initArticleLightbox();

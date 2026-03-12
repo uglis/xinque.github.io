@@ -36,6 +36,19 @@
         <p>这里是你的文章空间。你只需要在 `data/posts.json` 新增一条记录，就能自动展示在这里。</p>
       </section>
 
+      <section class="panel reveal-target posts-filters" aria-label="文章筛选">
+        <label class="search-label" for="posts-search">搜索文章</label>
+        <input
+          id="posts-search"
+          class="search-input"
+          type="search"
+          placeholder="搜索标题、摘要、正文、标签…"
+          autocomplete="off"
+        />
+        <div id="posts-tags" class="tags-wrap" role="group" aria-label="按标签筛选"></div>
+        <p id="posts-result-status" class="result-status" aria-live="polite"></p>
+      </section>
+
       <section id="posts-list" class="list-grid reveal-target" aria-live="polite"></section>
     </main>
 

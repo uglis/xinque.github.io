@@ -3,6 +3,9 @@ const currentYear = document.getElementById("year");
 const postsList = document.getElementById("posts-list");
 const photosList = document.getElementById("photos-list");
 const postDetail = document.getElementById("post-detail");
+const postsSearch = document.getElementById("posts-search");
+const postsTags = document.getElementById("posts-tags");
+const postsResultStatus = document.getElementById("posts-result-status");
 
 const escapeHtml = (value) =>
   String(value)
@@ -47,19 +50,115 @@ const renderPosts = async () => {
     const response = await fetch("./data/posts.json");
     if (!response.ok) throw new Error("posts fetch failed");
     const posts = await response.json();
+    const normalizedPosts = Array.isArray(posts)
+      ? posts.map((post) => {
+          const tags = Array.isArray(post.tags)
+            ? post.tags
+                .map((tag) => String(tag || "").trim())
+                .filter((tag) => Boolean(tag))
+            : [];
 
-    postsList.innerHTML = posts
-      .map(
-        (post) => `
-          <article class="list-item reveal-target visible">
-            <p class="meta">${escapeHtml(post.date || "未设置日期")}</p>
-            <h3>${escapeHtml(post.title || "未命名文章")}</h3>
-            <p>${escapeHtml(post.summary || "暂无摘要")}</p>
-            <a class="list-link" href="./post.html?slug=${encodeURIComponent(post.slug || "")}">阅读更多</a>
-          </article>
-        `
-      )
-      .join("");
+          return {
+            ...post,
+            tags,
+          };
+        })
+      : [];
+
+    let selectedTag = "all";
+
+    const renderTagFilter = () => {
+      if (!postsTags) return;
+
+      const uniqueTags = Array.from(new Set(normalizedPosts.flatMap((post) => post.tags)));
+      const allTags = ["all", ...uniqueTags];
+
+      postsTags.innerHTML = allTags
+        .map((tag) => {
+          const isAll = tag === "all";
+          const label = isAll ? "全部" : tag;
+          const activeClass = selectedTag === tag ? "active" : "";
+
+          return `<button type="button" class="tag-chip ${activeClass}" data-tag="${escapeHtml(tag)}">${escapeHtml(label)}</button>`;
+        })
+        .join("");
+    };
+
+    const getFilteredPosts = () => {
+      const keyword = postsSearch ? postsSearch.value.trim().toLowerCase() : "";
+
+      return normalizedPosts.filter((post) => {
+        const matchesTag = selectedTag === "all" || post.tags.includes(selectedTag);
+        if (!matchesTag) return false;
+        if (!keyword) return true;
+
+        const haystack = [
+          post.title || "",
+          post.summary || "",
+          Array.isArray(post.content) ? post.content.join(" ") : post.content || "",
+          post.tags.join(" "),
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return haystack.includes(keyword);
+      });
+    };
+
+    const renderPostCards = () => {
+      const visiblePosts = getFilteredPosts();
+
+      if (!visiblePosts.length) {
+        postsList.innerHTML = '<article class="list-item"><p>没有找到匹配的文章，换个关键词或标签试试。</p></article>';
+      } else {
+        postsList.innerHTML = visiblePosts
+          .map(
+            (post) => `
+              <article class="list-item reveal-target visible">
+                <p class="meta">${escapeHtml(post.date || "未设置日期")}</p>
+                <h3>${escapeHtml(post.title || "未命名文章")}</h3>
+                <p>${escapeHtml(post.summary || "暂无摘要")}</p>
+                ${
+                  post.tags.length
+                    ? `<div class="post-tags">${post.tags
+                        .map((tag) => `<span class="post-tag">${escapeHtml(tag)}</span>`)
+                        .join("")}</div>`
+                    : ""
+                }
+                <a class="list-link" href="./post.html?slug=${encodeURIComponent(post.slug || "")}">阅读更多</a>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      if (postsResultStatus) {
+        postsResultStatus.textContent = `共 ${visiblePosts.length} 篇文章`;
+      }
+    };
+
+    renderTagFilter();
+    renderPostCards();
+
+    if (postsSearch) {
+      postsSearch.addEventListener("input", () => {
+        renderPostCards();
+      });
+    }
+
+    if (postsTags) {
+      postsTags.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+
+        const tag = target.getAttribute("data-tag");
+        if (!tag) return;
+
+        selectedTag = tag;
+        renderTagFilter();
+        renderPostCards();
+      });
+    }
   } catch (error) {
     postsList.innerHTML = '<article class="list-item"><p>文章加载失败，请稍后重试。</p></article>';
   }
@@ -121,9 +220,20 @@ const renderPostDetail = async () => {
       ? `<img class="article-cover" src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.title)}" loading="lazy" />`
       : "";
 
+    const tags = Array.isArray(post.tags)
+      ? post.tags
+          .map((tag) => String(tag || "").trim())
+          .filter((tag) => Boolean(tag))
+      : [];
+
+    const tagsMarkup = tags.length
+      ? `<div class="post-tags">${tags.map((tag) => `<span class="post-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
+      : "";
+
     postDetail.innerHTML = `
       <p class="meta">${post.date}</p>
       <h1>${escapeHtml(post.title)}</h1>
+      ${tagsMarkup}
       ${cover}
       <div class="article-content">${content}</div>
       <p><a class="list-link" href="./posts.html">← 返回文章列表</a></p>

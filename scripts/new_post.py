@@ -24,6 +24,12 @@ def main() -> None:
     parser.add_argument("--slug", help="Custom slug")
     parser.add_argument("--cover", default="", help="Cover image URL/path")
     parser.add_argument(
+        "--tags",
+        nargs="*",
+        default=[],
+        help="Post tags, pass multiple values",
+    )
+    parser.add_argument(
         "--content",
         nargs="+",
         default=["请在 data/posts.json 中继续完善正文内容。"],
@@ -54,6 +60,7 @@ def main() -> None:
         "title": args.title,
         "date": args.date,
         "summary": args.summary,
+        "tags": [tag.strip() for tag in args.tags if tag.strip()],
         "content": args.content,
         "cover": args.cover,
     }

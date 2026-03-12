@@ -41,7 +41,9 @@ python3 -m http.server 8080
   "title": "文章标题",
   "date": "2026-03-12",
   "summary": "摘要",
-  "url": "文章链接（可填外链或站内链接）"
+  "tags": ["产品", "工程"],
+  "content": ["第一段", "第二段"],
+  "cover": "封面图地址（可选）"
 }
 ```
 
@@ -74,6 +76,9 @@ python3 -m http.server 8080
 
 ```bash
 npm run new:post -- --title "今天的思考" --summary "一句话摘要" --content "第一段" "第二段" --cover "./images/cover.jpg"
+
+# 带标签
+npm run new:post -- --title "今天的思考" --summary "一句话摘要" --tags "产品" "工程" --content "第一段" "第二段"
 ```
 
 - 新增照片（自动写入 `data/photos.json`）
@@ -85,9 +90,15 @@ npm run new:photo -- --src "./images/photo-01.jpg" --title "黄昏街道" --desc
 如果你不想用 npm，也可以直接：
 
 ```bash
-python3 ./scripts/new_post.py --title "..." --summary "..."
+python3 ./scripts/new_post.py --title "..." --summary "..." --tags "标签A" "标签B"
 python3 ./scripts/new_photo.py --src "..." --title "..."
 ```
+
+## 文章标签与搜索
+
+- `posts.html` 已支持按关键词搜索（标题 / 摘要 / 正文 / 标签）
+- `posts.html` 已支持标签筛选（可与搜索组合）
+- `post.html` 会显示文章标签
 
 ## 页面结构
 

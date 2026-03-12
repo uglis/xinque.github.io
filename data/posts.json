@@ -1,5 +1,16 @@
 [
   {
+    "slug": "my-markdown-post-2",
+    "title": "我的联系方式（微信）",
+    "date": "2026-03-12",
+    "summary": "点开有二维码",
+    "tags": [
+      "日常"
+    ],
+    "content_markdown": "这是我的二维码",
+    "cover": "./IMG_5955.jpg"
+  },
+  {
     "slug": "my-markdown-post",
     "title": "我的 Markdown 文章",
     "date": "2026-03-12",

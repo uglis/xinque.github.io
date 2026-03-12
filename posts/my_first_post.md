@@ -1,14 +1,14 @@
 ---
-title: 我的 Markdown 文章
+title: 我的联系方式（微信）
 date: 2026-03-12
-summary: this is my first post
+summary: 点开有二维码
 slug: my-markdown-post
-cover: ./images/cover.jpg
+cover: ./IMG_5955.jpg
 tags:
-  - TODO
+  - 日常
 ---
-# 第一篇
-没啥想说的
+这是我的二维码
+
 
 
  

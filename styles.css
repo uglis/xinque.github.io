@@ -529,6 +529,41 @@ h1 {
   margin-top: 16px;
 }
 
+.profile-list {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr minmax(150px, 220px);
+  gap: 18px;
+  align-items: start;
+}
+
+.wechat-card {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(11, 16, 27, 0.75);
+  padding: 10px;
+}
+
+.wechat-qr {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
+.wechat-card figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
 .footer {
   width: min(1120px, 92vw);
   margin: 0 auto 40px;
@@ -590,6 +625,14 @@ section[id] {
 
   .header {
     border-radius: 18px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wechat-card {
+    width: min(220px, 100%);
   }
 }
 

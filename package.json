@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "new:post": "python3 ./scripts/new_post.py",
-    "new:photo": "python3 ./scripts/new_photo.py"
+    "new:photo": "python3 ./scripts/new_photo.py",
+    "publish:md": "python3 ./scripts/publish_markdown_post.py"
   }
 }

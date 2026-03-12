@@ -452,6 +452,55 @@ h1 {
   margin: 0 0 14px;
 }
 
+.article-content h1,
+.article-content h2,
+.article-content h3 {
+  margin: 18px 0 10px;
+  line-height: 1.3;
+}
+
+.article-content blockquote {
+  margin: 14px 0;
+  padding: 8px 0 8px 14px;
+  border-left: 3px solid rgba(123, 199, 255, 0.5);
+  color: #c7d4f6;
+}
+
+.article-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(17, 26, 44, 0.8);
+  color: #d7edff;
+}
+
+.article-content .md-code {
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(8, 12, 20, 0.9);
+  overflow-x: auto;
+}
+
+.article-content .md-code code {
+  padding: 0;
+  background: transparent;
+}
+
+.article-content .md-list {
+  margin: 10px 0 14px;
+  color: var(--muted);
+  line-height: 1.84;
+}
+
+.article-content hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 18px 0;
+}
+
 .lightbox {
   position: fixed;
   inset: 0;

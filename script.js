@@ -20,6 +20,118 @@ const escapeHtml = (value) =>
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
+const parseInlineMarkdown = (value) =>
+  escapeHtml(value)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a class="list-link" href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+const renderMarkdownToHtml = (markdown) => {
+  const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+  const chunks = [];
+  let inUl = false;
+  let inOl = false;
+  let inCode = false;
+  let codeLines = [];
+
+  const closeLists = () => {
+    if (inUl) {
+      chunks.push("</ul>");
+      inUl = false;
+    }
+    if (inOl) {
+      chunks.push("</ol>");
+      inOl = false;
+    }
+  };
+
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (line.startsWith("```")) {
+      closeLists();
+
+      if (inCode) {
+        chunks.push(`<pre class="md-code"><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+        codeLines = [];
+        inCode = false;
+      } else {
+        inCode = true;
+      }
+
+      return;
+    }
+
+    if (inCode) {
+      codeLines.push(rawLine);
+      return;
+    }
+
+    if (!line) {
+      closeLists();
+      return;
+    }
+
+    if (/^#{1,3}\s+/.test(line)) {
+      closeLists();
+      const level = Math.min((line.match(/^#+/) || [""])[0].length, 3);
+      const text = line.replace(/^#{1,3}\s+/, "");
+      chunks.push(`<h${level}>${parseInlineMarkdown(text)}</h${level}>`);
+      return;
+    }
+
+    if (/^>\s+/.test(line)) {
+      closeLists();
+      chunks.push(`<blockquote>${parseInlineMarkdown(line.replace(/^>\s+/, ""))}</blockquote>`);
+      return;
+    }
+
+    if (/^([-*])\s+/.test(line)) {
+      if (inOl) {
+        chunks.push("</ol>");
+        inOl = false;
+      }
+      if (!inUl) {
+        chunks.push('<ul class="md-list">');
+        inUl = true;
+      }
+      chunks.push(`<li>${parseInlineMarkdown(line.replace(/^([-*])\s+/, ""))}</li>`);
+      return;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      if (inUl) {
+        chunks.push("</ul>");
+        inUl = false;
+      }
+      if (!inOl) {
+        chunks.push('<ol class="md-list">');
+        inOl = true;
+      }
+      chunks.push(`<li>${parseInlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</li>`);
+      return;
+    }
+
+    if (/^---+$/.test(line)) {
+      closeLists();
+      chunks.push("<hr />");
+      return;
+    }
+
+    closeLists();
+    chunks.push(`<p>${parseInlineMarkdown(line)}</p>`);
+  });
+
+  if (inCode) {
+    chunks.push(`<pre class="md-code"><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+  }
+
+  closeLists();
+
+  return chunks.join("");
+};
+
 if (currentYear) {
   currentYear.textContent = String(new Date().getFullYear());
 }
@@ -103,6 +215,7 @@ const renderPosts = async () => {
           post.title || "",
           post.summary || "",
           Array.isArray(post.content) ? post.content.join(" ") : post.content || "",
+          post.content_markdown || "",
           post.tags.join(" "),
         ]
           .join(" ")
@@ -219,9 +332,12 @@ const renderPostDetail = async () => {
       return;
     }
 
-    const content = Array.isArray(post.content)
-      ? post.content.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")
-      : `<p>${escapeHtml(post.summary)}</p>`;
+    const content =
+      typeof post.content_markdown === "string" && post.content_markdown.trim()
+        ? renderMarkdownToHtml(post.content_markdown)
+        : Array.isArray(post.content)
+          ? post.content.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")
+          : `<p>${escapeHtml(post.summary)}</p>`;
 
     const cover = post.cover
       ? `<img class="article-cover" src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.title)}" loading="lazy" />`

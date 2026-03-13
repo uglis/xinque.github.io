@@ -99,6 +99,94 @@ def parse_tags(raw_tags: list[str]) -> list[str]:
     return tags
 
 
+def publish_markdown_file(
+    *,
+    file_path: str,
+    title: str | None = None,
+    post_date: str | None = None,
+    summary: str | None = None,
+    slug: str | None = None,
+    cover: str = "",
+    tags: list[str] | None = None,
+    root: Path | None = None,
+) -> str:
+    base_root = root or Path(__file__).resolve().parents[1]
+    input_path = Path(file_path)
+    md_path = (base_root / input_path).resolve() if not input_path.is_absolute() else input_path
+    posts_path = base_root / "data" / "posts.json"
+
+    if not md_path.exists():
+        raise FileNotFoundError(f"Markdown file not found: {md_path}")
+
+    markdown_text_raw = md_path.read_text(encoding="utf-8")
+    frontmatter, markdown_body = extract_frontmatter(markdown_text_raw)
+    markdown_text = strip_frontmatter(markdown_body).strip()
+
+    resolved_title = (title or str(frontmatter.get("title", "")).strip())
+    if not resolved_title:
+        raise ValueError("Missing title: provide --title or add title in markdown frontmatter")
+
+    resolved_date = post_date or str(frontmatter.get("date", "")).strip() or date.today().isoformat()
+    resolved_cover = cover.strip() or str(frontmatter.get("cover", "")).strip()
+
+    cli_tags = parse_tags(tags or [])
+    fm_tags_raw = frontmatter.get("tags", [])
+    fm_tags = fm_tags_raw if isinstance(fm_tags_raw, list) else parse_tags([str(fm_tags_raw)])
+    resolved_tags = list(dict.fromkeys([*cli_tags, *fm_tags]))
+
+    resolved_summary = (
+        (summary or "").strip()
+        or str(frontmatter.get("summary", "")).strip()
+        or markdown_summary(markdown_text)
+    )
+
+    with posts_path.open("r", encoding="utf-8") as file:
+        posts = json.load(file)
+
+    source_rel = str(md_path.relative_to(base_root)) if md_path.is_relative_to(base_root) else str(md_path)
+    base_slug = slug or str(frontmatter.get("slug", "")).strip() or slugify(resolved_title)
+
+    existing_index = next(
+        (index for index, item in enumerate(posts) if item.get("source_markdown_file") == source_rel),
+        -1,
+    )
+
+    if existing_index >= 0:
+        resolved_slug = str(posts[existing_index].get("slug") or base_slug)
+    else:
+        used_slugs = {item.get("slug", "") for item in posts}
+        resolved_slug = base_slug
+        if resolved_slug in used_slugs:
+            suffix = 2
+            candidate = f"{resolved_slug}-{suffix}"
+            while candidate in used_slugs:
+                suffix += 1
+                candidate = f"{resolved_slug}-{suffix}"
+            resolved_slug = candidate
+
+    new_post = {
+        "slug": resolved_slug,
+        "title": resolved_title,
+        "date": resolved_date,
+        "summary": resolved_summary,
+        "tags": resolved_tags,
+        "content_markdown": markdown_text,
+        "cover": resolved_cover,
+        "source_markdown_file": source_rel,
+    }
+
+    if existing_index >= 0:
+        posts[existing_index] = new_post
+    else:
+        posts.insert(0, new_post)
+
+    with posts_path.open("w", encoding="utf-8") as file:
+        json.dump(posts, file, ensure_ascii=False, indent=2)
+        file.write("\n")
+
+    return resolved_slug
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Publish markdown file to posts.json")
     parser.add_argument("--file", required=True, help="Markdown file path")
@@ -111,66 +199,17 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[1]
-    md_path = (root / args.file).resolve() if not Path(args.file).is_absolute() else Path(args.file)
-    posts_path = root / "data" / "posts.json"
-
-    if not md_path.exists():
-        raise FileNotFoundError(f"Markdown file not found: {md_path}")
-
-    markdown_text_raw = md_path.read_text(encoding="utf-8")
-    frontmatter, markdown_body = extract_frontmatter(markdown_text_raw)
-    markdown_text = strip_frontmatter(markdown_body).strip()
-
-    title = (args.title or str(frontmatter.get("title", "")).strip())
-    if not title:
-        raise ValueError("Missing title: provide --title or add title in markdown frontmatter")
-
-    post_date = (args.date or str(frontmatter.get("date", "")).strip() or date.today().isoformat())
-
-    cover = args.cover.strip() or str(frontmatter.get("cover", "")).strip()
-    cli_tags = parse_tags(args.tags)
-    fm_tags_raw = frontmatter.get("tags", [])
-    fm_tags = fm_tags_raw if isinstance(fm_tags_raw, list) else parse_tags([str(fm_tags_raw)])
-    tags = list(dict.fromkeys([*cli_tags, *fm_tags]))
-
-    summary = (
-        args.summary.strip()
-        or str(frontmatter.get("summary", "")).strip()
-        or markdown_summary(markdown_text)
+    published_slug = publish_markdown_file(
+        file_path=args.file,
+        title=args.title,
+        post_date=args.date,
+        summary=args.summary,
+        slug=args.slug,
+        cover=args.cover,
+        tags=args.tags,
     )
 
-    with posts_path.open("r", encoding="utf-8") as file:
-        posts = json.load(file)
-
-    slug = args.slug or str(frontmatter.get("slug", "")).strip() or slugify(title)
-    used_slugs = {item.get("slug", "") for item in posts}
-
-    if slug in used_slugs:
-        suffix = 2
-        candidate = f"{slug}-{suffix}"
-        while candidate in used_slugs:
-            suffix += 1
-            candidate = f"{slug}-{suffix}"
-        slug = candidate
-
-    new_post = {
-        "slug": slug,
-        "title": title,
-        "date": post_date,
-        "summary": summary,
-        "tags": tags,
-        "content_markdown": markdown_text,
-        "cover": cover,
-    }
-
-    posts.insert(0, new_post)
-
-    with posts_path.open("w", encoding="utf-8") as file:
-        json.dump(posts, file, ensure_ascii=False, indent=2)
-        file.write("\n")
-
-    print(f"Published markdown post: {slug}")
+    print(f"Published markdown post: {published_slug}")
 
 
 if __name__ == "__main__":

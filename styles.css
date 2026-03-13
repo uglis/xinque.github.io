@@ -519,6 +519,45 @@ h1 {
   line-height: 1.84;
 }
 
+.article-content .md-li {
+  margin: 4px 0;
+}
+
+.article-content .md-list-ul .md-level-0,
+.article-content .md-list-ol .md-level-0 {
+  margin-left: 0;
+}
+
+.article-content .md-list-ul .md-level-1,
+.article-content .md-list-ol .md-level-1 {
+  margin-left: 20px;
+}
+
+.article-content .md-list-ul .md-level-2,
+.article-content .md-list-ol .md-level-2 {
+  margin-left: 40px;
+}
+
+.article-content .md-list-ul .md-level-3,
+.article-content .md-list-ol .md-level-3,
+.article-content .md-li[class*="md-level-4"],
+.article-content .md-li[class*="md-level-5"],
+.article-content .md-li[class*="md-level-6"] {
+  margin-left: 60px;
+}
+
+.article-content .md-list-ul .md-level-1 {
+  list-style-type: circle;
+}
+
+.article-content .md-list-ul .md-level-2,
+.article-content .md-list-ul .md-level-3,
+.article-content .md-list-ul .md-li[class*="md-level-4"],
+.article-content .md-list-ul .md-li[class*="md-level-5"],
+.article-content .md-list-ul .md-li[class*="md-level-6"] {
+  list-style-type: square;
+}
+
 .article-content hr {
   border: 0;
   border-top: 1px solid var(--line);
@@ -644,6 +683,64 @@ h1 {
   font-size: 0.9rem;
 }
 
+.admin-layout {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-field {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-field label {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.admin-input,
+.admin-textarea {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(10, 14, 24, 0.72);
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.admin-textarea {
+  min-height: 48vh;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.admin-input:focus-visible,
+.admin-textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.admin-status {
+  margin: 0;
+  color: var(--muted);
+  min-height: 1.3em;
+}
+
+.admin-status.ok {
+  color: var(--accent-2);
+}
+
+.admin-status.error {
+  color: #ff8a8a;
+}
+
 .reveal-target {
   opacity: 0;
   transform: translateY(16px);
@@ -698,6 +795,10 @@ section[id] {
 
   .header {
     border-radius: 18px;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
   }
 
   .contact-grid {

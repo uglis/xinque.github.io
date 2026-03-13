@@ -147,6 +147,45 @@ npm run publish:md -- --file "posts/my-first-post.md"
 - 代码块 ````` ``` `````
 - 粗体 `**text**`、斜体 `*text*`
 - 链接 `[text](https://...)`
+- 图片 `![alt](src)`（支持点击查看原图）
+- 无序/有序列表支持缩进层级显示（按 2 空格或 1 个 tab 作为一级）
+
+## 网页内编辑与发布（仅你本人）
+
+你现在可以用 `admin.html` 在浏览器编辑 Markdown 并发布，但发布权限由本地令牌控制。
+
+1. 启动静态页面：
+
+```bash
+python3 -m http.server 8080
+```
+
+2. 启动受保护发布服务（新终端执行）：
+
+```bash
+export ADMIN_PUBLISH_TOKEN="换成一个你自己的强密码令牌"
+python3 ./scripts/admin_publish_server.py
+```
+
+3. 打开管理页：
+
+```text
+http://127.0.0.1:8080/admin.html
+```
+
+4. 输入：
+
+- 文件路径（必须以 `posts/` 开头）
+- 管理员令牌（即 `ADMIN_PUBLISH_TOKEN`）
+- Markdown 内容
+
+然后点击“发布文章”。
+
+### 安全说明（务必看）
+
+- 该发布服务默认只监听 `127.0.0.1:8787`，仅本机可访问
+- 不要把 `ADMIN_PUBLISH_TOKEN` 写进仓库或前端代码
+- 若你将站点部署为纯静态托管，`admin.html` 仍可打开，但没有本地发布服务就无法发布
 
 ## 文章标签与搜索
 

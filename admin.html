@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理后台 · Markdown 发布</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-radial" aria-hidden="true"></div>
+
+    <header class="header">
+      <a class="logo" href="./index.html">林方浩</a>
+      <nav aria-label="站点导航">
+        <a href="./index.html">主页</a>
+        <a href="./posts.html">文章</a>
+        <a href="./photos.html">照片</a>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-main">
+      <section class="panel reveal-target visible">
+        <div class="panel-head">
+          <p class="kicker">ADMIN</p>
+          <h1>Markdown 发布</h1>
+        </div>
+        <p>仅用于你本地发布。需要先启动本地受保护发布服务，并设置管理员令牌。</p>
+      </section>
+
+      <section class="panel reveal-target visible admin-layout" aria-label="发布编辑器">
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label for="md-file">Markdown 文件路径（必须在 posts/ 下）</label>
+            <input id="md-file" class="admin-input" type="text" value="posts/new-post.md" />
+          </div>
+          <div class="admin-field">
+            <label for="admin-token">管理员令牌（仅保存在当前浏览器）</label>
+            <input id="admin-token" class="admin-input" type="password" placeholder="输入 ADMIN_PUBLISH_TOKEN" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="admin-field">
+          <label for="md-content">Markdown 内容</label>
+          <textarea id="md-content" class="admin-textarea" spellcheck="false" placeholder="在这里写 Markdown，包括 frontmatter"></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="publish-btn" class="btn btn-solid" type="button">发布文章</button>
+          <button id="preview-btn" class="btn btn-outline" type="button">预览到新窗口</button>
+        </div>
+
+        <p id="admin-status" class="admin-status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="./admin.js" defer></script>
+  </body>
+</html>

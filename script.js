@@ -34,27 +34,34 @@ const parseInlineMarkdown = (value) =>
 const renderMarkdownToHtml = (markdown) => {
   const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
   const chunks = [];
-  let inUl = false;
-  let inOl = false;
+  let currentListType = "";
   let inCode = false;
   let codeLines = [];
 
-  const closeLists = () => {
-    if (inUl) {
+  const closeList = () => {
+    if (currentListType === "ul") {
       chunks.push("</ul>");
-      inUl = false;
+      currentListType = "";
     }
-    if (inOl) {
+    if (currentListType === "ol") {
       chunks.push("</ol>");
-      inOl = false;
+      currentListType = "";
     }
+  };
+
+  const getIndentLevel = (line) => {
+    const expanded = line.replace(/\t/g, "  ");
+    const leading = (expanded.match(/^(\s*)/) || ["", ""])[1].length;
+    return Math.min(Math.floor(leading / 2), 6);
   };
 
   lines.forEach((rawLine) => {
     const line = rawLine.trim();
+    const ulMatch = rawLine.match(/^(\s*)[-*]\s+(.*)$/);
+    const olMatch = rawLine.match(/^(\s*)\d+\.\s+(.*)$/);
 
     if (line.startsWith("```")) {
-      closeLists();
+      closeList();
 
       if (inCode) {
         chunks.push(`<pre class="md-code"><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
@@ -73,12 +80,12 @@ const renderMarkdownToHtml = (markdown) => {
     }
 
     if (!line) {
-      closeLists();
+      closeList();
       return;
     }
 
     if (/^#{1,3}\s+/.test(line)) {
-      closeLists();
+      closeList();
       const level = Math.min((line.match(/^#+/) || [""])[0].length, 3);
       const text = line.replace(/^#{1,3}\s+/, "");
       chunks.push(`<h${level}>${parseInlineMarkdown(text)}</h${level}>`);
@@ -86,44 +93,54 @@ const renderMarkdownToHtml = (markdown) => {
     }
 
     if (/^>\s+/.test(line)) {
-      closeLists();
+      closeList();
       chunks.push(`<blockquote>${parseInlineMarkdown(line.replace(/^>\s+/, ""))}</blockquote>`);
       return;
     }
 
-    if (/^([-*])\s+/.test(line)) {
-      if (inOl) {
+    if (ulMatch) {
+      const text = ulMatch[2]?.trim() || "";
+      const level = getIndentLevel(rawLine);
+
+      if (currentListType === "ol") {
         chunks.push("</ol>");
-        inOl = false;
+        currentListType = "";
       }
-      if (!inUl) {
-        chunks.push('<ul class="md-list">');
-        inUl = true;
+
+      if (!currentListType) {
+        chunks.push('<ul class="md-list md-list-ul">');
+        currentListType = "ul";
       }
-      chunks.push(`<li>${parseInlineMarkdown(line.replace(/^([-*])\s+/, ""))}</li>`);
+
+      chunks.push(`<li class="md-li md-level-${level}">${parseInlineMarkdown(text)}</li>`);
       return;
     }
 
-    if (/^\d+\.\s+/.test(line)) {
-      if (inUl) {
+    if (olMatch) {
+      const text = olMatch[2]?.trim() || "";
+      const level = getIndentLevel(rawLine);
+
+      if (currentListType === "ul") {
         chunks.push("</ul>");
-        inUl = false;
+        currentListType = "";
       }
-      if (!inOl) {
-        chunks.push('<ol class="md-list">');
-        inOl = true;
+
+      if (!currentListType) {
+        chunks.push('<ol class="md-list md-list-ol">');
+        currentListType = "ol";
       }
-      chunks.push(`<li>${parseInlineMarkdown(line.replace(/^\d+\.\s+/, ""))}</li>`);
+
+      chunks.push(`<li class="md-li md-level-${level}">${parseInlineMarkdown(text)}</li>`);
       return;
     }
 
     if (/^---+$/.test(line)) {
-      closeLists();
+      closeList();
       chunks.push("<hr />");
       return;
     }
 
-    closeLists();
+    closeList();
     chunks.push(`<p>${parseInlineMarkdown(line)}</p>`);
   });
 
@@ -131,7 +148,7 @@ const renderMarkdownToHtml = (markdown) => {
     chunks.push(`<pre class="md-code"><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
   }
 
-  closeLists();
+  closeList();
 
   return chunks.join("");
 };

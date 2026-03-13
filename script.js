@@ -92,6 +92,14 @@ const parseInlineMarkdown = (value) =>
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 
+const renderMomentText = (value) => {
+  const normalized = String(value || "");
+  return normalized
+    .split("\n")
+    .map((line) => parseInlineMarkdown(line))
+    .join("<br />");
+};
+
 const renderMarkdownToHtml = (markdown) => {
   const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
   const chunks = [];
@@ -391,7 +399,7 @@ const renderMoments = async () => {
         if (hasPhoto) previewMeta.push("图片");
         if (hasMusic) previewMeta.push(`音乐 · ${music.platform || "链接"}`);
 
-        const previewText = String(moment.text || "").trim();
+        const previewText = String(moment.text || "").replace(/\n+/g, " ").trim();
         const compactText = previewText.length > 38 ? `${previewText.slice(0, 38)}…` : previewText;
 
         if (mode === "preview") {
@@ -409,7 +417,7 @@ const renderMoments = async () => {
           <article class="moment-card reveal-target visible">
             <div class="moment-timeline-marker" aria-hidden="true"></div>
             <p class="meta moment-date">${escapeHtml(moment.date || "未设置日期")}</p>
-            <p class="moment-text">${escapeHtml(moment.text || "")}</p>
+            <p class="moment-text">${renderMomentText(moment.text || "")}</p>
             ${
               photo.src
                 ? `<img class="moment-photo article-zoomable" src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt || "分享照片")}" loading="lazy" tabindex="0" role="button" aria-label="查看原图：${escapeHtml(photo.alt || "分享照片")}" data-article-img-src="${escapeHtml(photo.src)}" data-article-img-title="${escapeHtml(photo.alt || "分享照片")}" data-article-img-description="朋友圈原图" />`

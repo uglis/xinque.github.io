@@ -1,17 +1,4 @@
-[
-  {
-    "date": "2026-03-13",
-    "text": "我偷偷的爱上你\n却不敢告诉你\n因为我知道我给不到你要的东西\n我只能偷偷的想你\n只能偷偷看着你\n总是没勇气\n总说不出我是真上你",
-    "music": {
-      "platform": "网易云音乐",
-      "title": "我是真的爱上你",
-      "url": "https://music.163.com/song?id=156820&uct2=U2FsdGVkX1/heIb5Se6Ms/0ZEd+UkFwTAJTnoIo8wu4="
-    },
-    "photo": {
-      "src": "./photos/2.png",
-      "alt": "分享照片"
-    }
-  },
+[ 
   {
     "date": "2026-03-13",
     "text": "我的第一条动态，今天很喜欢这首歌",

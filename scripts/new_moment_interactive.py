@@ -36,6 +36,40 @@ def ask_multiline(prompt: str) -> str:
     return text
 
 
+def ask_text_source() -> str:
+    while True:
+        source = ask("动态内容来源：1) 直接输入 2) 从文件读取", "1").strip()
+
+        if source == "1":
+            return ask_multiline("动态内容")
+
+        if source == "2":
+            file_path = ask("请输入文本文件路径（例如 ./moments/draft.txt）", "").strip()
+            if not file_path:
+                print("⚠️ 文件路径不能为空，请重试")
+                continue
+
+            path = Path(file_path).expanduser().resolve()
+            if not path.exists() or not path.is_file():
+                print(f"⚠️ 未找到文件：{path}")
+                continue
+
+            content = path.read_text(encoding="utf-8").strip()
+            if not content:
+                print("⚠️ 文件内容为空，请重试")
+                continue
+
+            if path.suffix.lower() in {".md", ".markdown"} and content.startswith("---\n"):
+                parts = content.split("\n---\n", 1)
+                if len(parts) == 2:
+                    content = parts[1].lstrip()
+
+            print(f"已读取文件内容：{path}")
+            return content
+
+        print("⚠️ 请输入 1 或 2")
+
+
 def normalize_multiline_text(text: str) -> str:
     normalized_lines: list[str] = []
 
@@ -57,9 +91,10 @@ def main() -> None:
     today = date.today().isoformat()
 
     print("\n=== 新建动态（Interactive）===")
-    text = normalize_multiline_text(ask_multiline("动态内容"))
+    text = normalize_multiline_text(ask_text_source())
     while not text:
-        text = normalize_multiline_text(ask_multiline("动态内容不能为空，请重新输入"))
+        print("⚠️ 动态内容不能为空，请重新输入")
+        text = normalize_multiline_text(ask_text_source())
 
     moment_date = ask("日期 (YYYY-MM-DD)", today)
 

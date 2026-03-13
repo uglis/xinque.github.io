@@ -88,7 +88,9 @@ npm run new:moment:interactive
 
 运行后会依次询问：
 
-- 动态内容（支持多行，单独输入 `.` 结束）
+- 动态内容来源：
+  - 直接输入（支持多行，单独输入 `.` 结束）
+  - 从文件读取（输入文本文件路径，支持 `.txt` / `.md`）
 - 日期（默认今天）
 - 是否添加音乐（平台 / 标题 / 链接）
 - 是否添加照片（路径 / 描述）
@@ -100,6 +102,19 @@ npm run new:moment:interactive
 - 会自动清理每行首尾空格
 - 连续空格会收敛为一个空格
 - 连续 3 行及以上空行会收敛为 2 行
+
+从文件读取示例：
+
+1. 准备一个文本文件（例如 `./moments/draft.txt`）
+2. 运行 `npm run new:moment:interactive`
+3. 在“动态内容来源”输入 `2`
+4. 输入文件路径 `./moments/draft.txt`
+
+Markdown 文件说明：
+
+- 支持读取 `.md` / `.markdown` 文件
+- 若文件开头有 frontmatter（`---` 包裹），会自动跳过 frontmatter，只发布正文
+- 动态展示支持常用行内 Markdown：链接、粗体、斜体、行内代码（并保留换行）
 
 如果你不想用 npm，也可以直接：
 

@@ -407,6 +407,20 @@ h1 {
   line-height: 1.72;
 }
 
+.moment-card-preview .moment-text {
+  margin-bottom: 6px;
+}
+
+.moment-preview-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.moments-actions {
+  margin-top: 6px;
+}
+
 .moment-photo {
   width: 100%;
   border-radius: 12px;

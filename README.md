@@ -87,11 +87,24 @@ npm run new:post -- --title "今天的思考" --summary "一句话摘要" --tags
 npm run new:photo -- --src "./images/photo-01.jpg" --title "黄昏街道" --description "下班路上拍到的一束光"
 ```
 
+- 新增动态 moments（自动写入 `data/moments.json`）
+
+```bash
+npm run new:moment -- \
+  --text "晚自习后听到这首歌，想分享给你" \
+  --music-platform "Apple Music" \
+  --music-title "Song Name" \
+  --music-url "https://music.apple.com/..." \
+  --photo "./photos/your-photo.jpg" \
+  --photo-alt "校园夜色"
+```
+
 如果你不想用 npm，也可以直接：
 
 ```bash
 python3 ./scripts/new_post.py --title "..." --summary "..." --tags "标签A" "标签B"
 python3 ./scripts/new_photo.py --src "..." --title "..."
+python3 ./scripts/new_moment.py --text "..." --music-url "..."
 ```
 
 ### 用 Markdown 发布文章（推荐）
@@ -196,6 +209,12 @@ http://127.0.0.1:8080/admin.html
 ## 页面结构
 
 - `index.html`：个人主页（含证件照）
+- `moments.html`：完整动态时间线（音乐/照片）
 - `posts.html`：文章列表
 - `post.html?slug=xxx`：文章详情页
 - `photos.html`：照片墙（支持点击灯箱预览）
+
+## Moments 展示策略
+
+- 首页 `index.html` 仅展示少量动态预览（降低信息密度）
+- 点击“查看全部动态”进入 `moments.html` 看完整时间线

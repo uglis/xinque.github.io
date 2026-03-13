@@ -388,10 +388,33 @@ const renderMoments = async () => {
     const moments = await response.json();
 
     const normalized = Array.isArray(moments) ? moments : [];
-    momentsList.innerHTML = normalized
+    const mode = momentsList.getAttribute("data-moments-mode") || "full";
+    const items = mode === "preview" ? normalized.slice(0, 3) : normalized;
+
+    momentsList.innerHTML = items
       .map((moment) => {
         const music = moment.music || {};
         const photo = moment.photo || {};
+        const hasPhoto = Boolean(photo.src);
+        const hasMusic = Boolean(music.url);
+
+        const previewMeta = [];
+        if (hasPhoto) previewMeta.push("图片");
+        if (hasMusic) previewMeta.push(`音乐 · ${music.platform || "链接"}`);
+
+        const previewText = String(moment.text || "").trim();
+        const compactText = previewText.length > 38 ? `${previewText.slice(0, 38)}…` : previewText;
+
+        if (mode === "preview") {
+          return `
+            <article class="moment-card moment-card-preview reveal-target visible">
+              <div class="moment-timeline-marker" aria-hidden="true"></div>
+              <p class="meta moment-date">${escapeHtml(moment.date || "未设置日期")}</p>
+              <p class="moment-text">${escapeHtml(compactText || "一条动态")}</p>
+              <p class="moment-preview-meta">${escapeHtml(previewMeta.join(" · ") || "文字")}</p>
+            </article>
+          `;
+        }
 
         return `
           <article class="moment-card reveal-target visible">

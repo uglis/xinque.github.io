@@ -5,6 +5,7 @@
   "scripts": {
     "new:post": "python3 ./scripts/new_post.py",
     "new:photo": "python3 ./scripts/new_photo.py",
+    "new:moment": "python3 ./scripts/new_moment.py",
     "publish:md": "python3 ./scripts/publish_markdown_post.py"
   }
 }

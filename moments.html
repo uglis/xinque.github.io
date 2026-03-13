@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>林方浩 · 动态</title>
+    <meta name="description" content="林方浩的 moments 动态分享页。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-radial" aria-hidden="true"></div>
+
+    <header class="header">
+      <a class="logo" href="./index.html">Fanghao Lin's Homepage</a>
+      <nav aria-label="站点导航">
+        <a href="./index.html">首页</a>
+        <a href="./posts.html">文章</a>
+        <a href="./photos.html">照片</a>
+        <a href="./moments.html">动态</a>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-main">
+      <section class="panel reveal-target">
+        <div class="panel-head">
+          <p class="kicker">MOMENTS</p>
+          <h1>动态</h1>
+        </div>
+        <p>这里是完整的 moments 时间线，记录音乐和生活碎片。</p>
+      </section>
+
+      <section class="panel reveal-target" aria-label="动态时间线">
+        <div id="moments-list" class="moments-grid" data-moments-mode="full" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="footer">© <span id="year"></span> 林方浩 · All Rights Reserved</footer>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>

@@ -417,7 +417,7 @@ const renderMoments = async () => {
             }
             ${
               music.url
-                ? `<p class="moment-music">🎵 ${escapeHtml(music.platform || "音乐")} · <a class="list-link" href="${escapeHtml(music.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(music.title || "打开链接")}</a></p>`
+                ? `<p class="moment-music"><span class="moment-music-icon" aria-hidden="true">♫</span> ${escapeHtml(music.platform || "音乐")} · <a class="list-link" href="${escapeHtml(music.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(music.title || "打开链接")}</a></p>`
                 : ""
             }
           </article>

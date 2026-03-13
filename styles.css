@@ -450,6 +450,32 @@ body[data-theme-mode="light"] .moment-photo {
   color: var(--muted);
 }
 
+.moment-music-icon {
+  display: inline-block;
+  margin-right: 4px;
+  color: color-mix(in srgb, var(--accent-2) 74%, #f7ffb8 26%);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent-2) 52%, transparent);
+  animation: musicIconFloat 2.2s ease-in-out infinite;
+}
+
+body[data-theme-mode="light"] .moment-music-icon {
+  color: color-mix(in srgb, var(--accent) 58%, #4e638f 42%);
+  text-shadow: none;
+  animation: none;
+}
+
+@keyframes musicIconFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.94;
+  }
+  50% {
+    transform: translateY(-1.5px);
+    opacity: 1;
+  }
+}
+
 .search-label {
   color: var(--text);
   font-weight: 600;
@@ -1073,5 +1099,9 @@ section[id] {
   .btn {
     transition: none !important;
     transform: none !important;
+  }
+
+  .moment-music-icon {
+    animation: none !important;
   }
 }

@@ -81,7 +81,7 @@ def extract_frontmatter(markdown_text: str) -> tuple[dict[str, str | list[str]],
 def markdown_summary(markdown_text: str, max_len: int = 90) -> str:
     plain = re.sub(r"```[\s\S]*?```", "", markdown_text)
     plain = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", plain)
-    plain = re.sub(r"\[[^\]]+\]\([^)]*\)", r"\1", plain)
+    plain = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", plain)
     plain = re.sub(r"[#>*`\-]", "", plain)
     plain = re.sub(r"\s+", " ", plain).strip()
     if len(plain) <= max_len:

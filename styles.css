@@ -1,11 +1,43 @@
 :root {
   --bg: #07080c;
+  --bg-start: #16213f;
+  --bg-end: #10293a;
   --surface: rgba(12, 15, 24, 0.78);
   --line: rgba(164, 190, 255, 0.22);
   --text: #e8edff;
   --muted: #9ca8c8;
   --accent: #7bc7ff;
   --accent-2: #8affc1;
+}
+
+body[data-theme-color="ocean"] {
+  --accent: #7bc7ff;
+  --accent-2: #8affc1;
+}
+
+body[data-theme-color="violet"] {
+  --accent: #a68cff;
+  --accent-2: #f7a6ff;
+}
+
+body[data-theme-color="lime"] {
+  --accent: #83f2b3;
+  --accent-2: #d6ff9f;
+}
+
+body[data-theme-color="peach"] {
+  --accent: #ffb68a;
+  --accent-2: #ffd8a8;
+}
+
+body[data-theme-mode="light"] {
+  --bg: #f3f7ff;
+  --bg-start: #dfe8ff;
+  --bg-end: #fff2ea;
+  --surface: rgba(255, 255, 255, 0.8);
+  --line: rgba(95, 120, 180, 0.25);
+  --text: #18203b;
+  --muted: #5f6990;
 }
 
 * {
@@ -21,8 +53,8 @@ body {
 body {
   font-family: "Sora", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 12% 8%, #16213f 0%, transparent 33%),
-    radial-gradient(circle at 88% 92%, #10293a 0%, transparent 30%), var(--bg);
+  background: radial-gradient(circle at 12% 8%, var(--bg-start) 0%, transparent 33%),
+    radial-gradient(circle at 88% 92%, var(--bg-end) 0%, transparent 30%), var(--bg);
   overflow-x: hidden;
 }
 
@@ -84,6 +116,45 @@ body.modal-open {
   position: sticky;
   top: 12px;
   z-index: 40;
+}
+
+.theme-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-mode-toggle,
+.theme-select {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(10, 14, 24, 0.72);
+  color: var(--text);
+  font: inherit;
+  padding: 8px 12px;
+}
+
+body[data-theme-mode="light"] .theme-mode-toggle,
+body[data-theme-mode="light"] .theme-select {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.theme-mode-toggle {
+  cursor: pointer;
+}
+
+.theme-mode-toggle:focus-visible,
+.theme-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .logo {
@@ -688,6 +759,24 @@ h1 {
   text-align: center;
 }
 
+body[data-theme-mode="light"] .header {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+body[data-theme-mode="light"] .panel,
+body[data-theme-mode="light"] .list-item,
+body[data-theme-mode="light"] .project-card,
+body[data-theme-mode="light"] .photo-card,
+body[data-theme-mode="light"] .portrait-card,
+body[data-theme-mode="light"] .wechat-card {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+body[data-theme-mode="light"] .btn-solid {
+  color: #fff;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 82%, #111 18%), color-mix(in srgb, var(--accent-2) 75%, #111 25%));
+}
+
 .footer {
   width: min(1120px, 92vw);
   margin: 0 auto 40px;
@@ -799,6 +888,12 @@ section[id] {
 
   nav {
     gap: 12px;
+  }
+
+  .theme-controls {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
   }
 
   nav a {

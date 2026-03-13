@@ -8,6 +8,81 @@ const postsTags = document.getElementById("posts-tags");
 const postsResultStatus = document.getElementById("posts-result-status");
 const postsFilters = document.querySelector(".posts-filters");
 
+const THEME_MODE_KEY = "homepage-theme-mode";
+const THEME_COLOR_KEY = "homepage-theme-color";
+const COLOR_THEMES = {
+  ocean: { accent: "#7bc7ff", accent2: "#8affc1" },
+  violet: { accent: "#a68cff", accent2: "#f7a6ff" },
+  lime: { accent: "#83f2b3", accent2: "#d6ff9f" },
+  peach: { accent: "#ffb68a", accent2: "#ffd8a8" },
+};
+
+const applyThemeMode = (mode) => {
+  const normalized = mode === "light" ? "light" : "dark";
+  document.body.setAttribute("data-theme-mode", normalized);
+  return normalized;
+};
+
+const applyThemeColor = (theme) => {
+  const normalized = Object.prototype.hasOwnProperty.call(COLOR_THEMES, theme) ? theme : "ocean";
+  document.body.setAttribute("data-theme-color", normalized);
+  return normalized;
+};
+
+const getSystemThemeMode = () => (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+
+const initThemeControls = () => {
+  const header = document.querySelector(".header");
+  if (!(header instanceof HTMLElement)) return;
+
+  const savedMode = window.localStorage.getItem(THEME_MODE_KEY);
+  const savedColor = window.localStorage.getItem(THEME_COLOR_KEY);
+
+  let currentMode = applyThemeMode(savedMode || getSystemThemeMode());
+  let currentColor = applyThemeColor(savedColor || "ocean");
+
+  const controls = document.createElement("div");
+  controls.className = "theme-controls";
+  controls.innerHTML = `
+    <button type="button" class="theme-mode-toggle" aria-label="切换白天/夜间模式">${currentMode === "light" ? "🌙 夜间" : "☀️ 白天"}</button>
+    <label class="theme-select-wrap" for="theme-color-select">
+      <span>主题</span>
+      <select id="theme-color-select" class="theme-select" aria-label="选择主题色">
+        <option value="ocean">海蓝</option>
+        <option value="violet">紫雾</option>
+        <option value="lime">青柠</option>
+        <option value="peach">蜜桃</option>
+      </select>
+    </label>
+  `;
+
+  const nav = header.querySelector("nav");
+  if (nav instanceof HTMLElement) {
+    nav.insertAdjacentElement("afterend", controls);
+  } else {
+    header.appendChild(controls);
+  }
+
+  const modeButton = controls.querySelector(".theme-mode-toggle");
+  const colorSelect = controls.querySelector("#theme-color-select");
+
+  if (colorSelect instanceof HTMLSelectElement) {
+    colorSelect.value = currentColor;
+    colorSelect.addEventListener("change", () => {
+      currentColor = applyThemeColor(colorSelect.value);
+      window.localStorage.setItem(THEME_COLOR_KEY, currentColor);
+    });
+  }
+
+  if (modeButton instanceof HTMLButtonElement) {
+    modeButton.addEventListener("click", () => {
+      currentMode = applyThemeMode(currentMode === "light" ? "dark" : "light");
+      window.localStorage.setItem(THEME_MODE_KEY, currentMode);
+      modeButton.textContent = currentMode === "light" ? "🌙 夜间" : "☀️ 白天";
+    });
+  }
+};
+
 if (postsFilters instanceof HTMLElement) {
   postsFilters.classList.add("visible");
 }
@@ -156,6 +231,8 @@ const renderMarkdownToHtml = (markdown) => {
 if (currentYear) {
   currentYear.textContent = String(new Date().getFullYear());
 }
+
+initThemeControls();
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 

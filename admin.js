@@ -5,6 +5,24 @@ const publishButton = document.getElementById("publish-btn");
 const previewButton = document.getElementById("preview-btn");
 const statusText = document.getElementById("admin-status");
 
+const THEME_MODE_KEY = "homepage-theme-mode";
+const THEME_COLOR_KEY = "homepage-theme-color";
+
+const applyThemeFromStorage = () => {
+  const savedMode = window.localStorage.getItem(THEME_MODE_KEY);
+  const savedColor = window.localStorage.getItem(THEME_COLOR_KEY);
+
+  if (savedMode === "light" || savedMode === "dark") {
+    document.body.setAttribute("data-theme-mode", savedMode);
+  }
+
+  if (savedColor) {
+    document.body.setAttribute("data-theme-color", savedColor);
+  }
+};
+
+applyThemeFromStorage();
+
 const STORAGE_KEY = "homepage-admin-token";
 
 const setStatus = (message, mode = "") => {

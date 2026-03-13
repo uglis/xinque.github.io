@@ -80,13 +80,37 @@ def extract_frontmatter(markdown_text: str) -> tuple[dict[str, str | list[str]],
 
 def markdown_summary(markdown_text: str, max_len: int = 90) -> str:
     plain = re.sub(r"```[\s\S]*?```", "", markdown_text)
-    plain = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", plain)
+    plain = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", plain)
     plain = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", plain)
-    plain = re.sub(r"[#>*`\-]", "", plain)
-    plain = re.sub(r"\s+", " ", plain).strip()
-    if len(plain) <= max_len:
-        return plain or "暂无摘要"
-    return f"{plain[:max_len].rstrip()}..."
+
+    lines: list[str] = []
+    for raw_line in plain.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        line = re.sub(r"^#{1,6}\s+", "", line)
+        line = re.sub(r"^>\s+", "", line)
+        line = re.sub(r"^[-*+]\s+", "", line)
+        line = re.sub(r"^\d+\.\s+", "", line)
+        line = re.sub(r"[`*_~]", "", line)
+        line = re.sub(r"\s+", " ", line).strip()
+
+        if line and not re.fullmatch(r"[-=]{3,}", line):
+            lines.append(line)
+
+    merged = " ".join(lines)
+    if len(merged) <= max_len:
+        return merged or "暂无摘要"
+    return f"{merged[:max_len].rstrip()}..."
+
+
+def frontmatter_text(frontmatter: dict[str, str | list[str]], *keys: str) -> str:
+    for key in keys:
+        value = frontmatter.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
 
 
 def parse_tags(raw_tags: list[str]) -> list[str]:
@@ -122,12 +146,12 @@ def publish_markdown_file(
     frontmatter, markdown_body = extract_frontmatter(markdown_text_raw)
     markdown_text = strip_frontmatter(markdown_body).strip()
 
-    resolved_title = (title or str(frontmatter.get("title", "")).strip())
+    resolved_title = title or frontmatter_text(frontmatter, "title")
     if not resolved_title:
         raise ValueError("Missing title: provide --title or add title in markdown frontmatter")
 
-    resolved_date = post_date or str(frontmatter.get("date", "")).strip() or date.today().isoformat()
-    resolved_cover = cover.strip() or str(frontmatter.get("cover", "")).strip()
+    resolved_date = post_date or frontmatter_text(frontmatter, "date") or date.today().isoformat()
+    resolved_cover = cover.strip() or frontmatter_text(frontmatter, "cover")
 
     cli_tags = parse_tags(tags or [])
     fm_tags_raw = frontmatter.get("tags", [])
@@ -136,7 +160,7 @@ def publish_markdown_file(
 
     resolved_summary = (
         (summary or "").strip()
-        or str(frontmatter.get("summary", "")).strip()
+        or frontmatter_text(frontmatter, "summary", "summmary", "description", "desc")
         or markdown_summary(markdown_text)
     )
 
@@ -144,7 +168,7 @@ def publish_markdown_file(
         posts = json.load(file)
 
     source_rel = str(md_path.relative_to(base_root)) if md_path.is_relative_to(base_root) else str(md_path)
-    base_slug = slug or str(frontmatter.get("slug", "")).strip() or slugify(resolved_title)
+    base_slug = slug or frontmatter_text(frontmatter, "slug") or slugify(resolved_title)
 
     existing_index = next(
         (index for index, item in enumerate(posts) if item.get("source_markdown_file") == source_rel),

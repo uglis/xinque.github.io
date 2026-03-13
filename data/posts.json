@@ -3,7 +3,7 @@
     "slug": "computer_architecture-2",
     "title": "计算机体系结构",
     "date": "2026-03-13",
-    "summary": "基本计算模型 计算机的基本组成部分 计算机系统的三大部件 计算部分 控制模块 control 数据通路 datapath 存储（主存，memory） 数据存储 指令存储 数据传输...",
+    "summary": "第2周课程（第2讲 指令集设计原则）",
     "tags": [
       "计算机体系结构"
     ],

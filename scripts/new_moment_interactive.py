@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import date
 from pathlib import Path
 
@@ -35,6 +36,20 @@ def ask_multiline(prompt: str) -> str:
     return text
 
 
+def normalize_multiline_text(text: str) -> str:
+    normalized_lines: list[str] = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.replace("\u3000", " ")
+        line = re.sub(r"[ \t]+", " ", line)
+        line = line.strip()
+        normalized_lines.append(line)
+
+    normalized = "\n".join(normalized_lines)
+    normalized = re.sub(r"\n{3,}", "\n\n", normalized).strip()
+    return normalized
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Interactive add moment")
     parser.parse_args()
@@ -42,9 +57,9 @@ def main() -> None:
     today = date.today().isoformat()
 
     print("\n=== 新建动态（Interactive）===")
-    text = ask_multiline("动态内容")
+    text = normalize_multiline_text(ask_multiline("动态内容"))
     while not text:
-        text = ask_multiline("动态内容不能为空，请重新输入")
+        text = normalize_multiline_text(ask_multiline("动态内容不能为空，请重新输入"))
 
     moment_date = ask("日期 (YYYY-MM-DD)", today)
 

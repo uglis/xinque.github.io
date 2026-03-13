@@ -95,6 +95,12 @@ npm run new:moment:interactive
 
 最后自动写入 `data/moments.json`。
 
+输入清理规则：
+
+- 会自动清理每行首尾空格
+- 连续空格会收敛为一个空格
+- 连续 3 行及以上空行会收敛为 2 行
+
 如果你不想用 npm，也可以直接：
 
 ```bash

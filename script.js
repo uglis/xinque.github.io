@@ -1,7 +1,6 @@
 const revealTargets = document.querySelectorAll(".reveal-target");
 const currentYear = document.getElementById("year");
 const postsList = document.getElementById("posts-list");
-const photosList = document.getElementById("photos-list");
 const postDetail = document.getElementById("post-detail");
 const postsSearch = document.getElementById("posts-search");
 const postsTags = document.getElementById("posts-tags");
@@ -369,32 +368,6 @@ const renderPosts = async () => {
   }
 };
 
-const renderPhotos = async () => {
-  if (!photosList) return;
-
-  try {
-    const response = await fetch("./data/photos.json");
-    if (!response.ok) throw new Error("photos fetch failed");
-    const photos = await response.json();
-
-    photosList.innerHTML = photos
-      .map(
-        (photo) => `
-          <figure class="photo-card reveal-target visible" tabindex="0" role="button" aria-label="查看大图：${escapeHtml(photo.title)}" data-photo-src="${escapeHtml(photo.src)}" data-photo-title="${escapeHtml(photo.title)}" data-photo-description="${escapeHtml(photo.description)}">
-            <img src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.title)}" loading="lazy" />
-            <figcaption class="copy">
-              <strong>${escapeHtml(photo.title)}</strong>
-              <p>${escapeHtml(photo.description)}</p>
-            </figcaption>
-          </figure>
-        `
-      )
-      .join("");
-  } catch (error) {
-    photosList.innerHTML = '<article class="list-item"><p>照片加载失败，请稍后重试。</p></article>';
-  }
-};
-
 const renderMoments = async () => {
   if (!momentsList) return;
 
@@ -585,42 +558,6 @@ const ensureLightbox = () => {
   return { lightbox, openLightbox };
 };
 
-const initPhotoLightbox = () => {
-  if (!photosList) return;
-
-  const { lightbox, openLightbox } = ensureLightbox();
-  const lightboxImage = lightbox.querySelector(".lightbox-image");
-  const lightboxCaption = lightbox.querySelector(".lightbox-caption");
-
-  const openFromCard = (card) => {
-    if (!card) return;
-
-    const src = card.getAttribute("data-photo-src");
-    const title = card.getAttribute("data-photo-title");
-    const description = card.getAttribute("data-photo-description");
-
-    if (!src || !title) return;
-
-    lightboxImage.src = src;
-    lightboxImage.alt = title;
-    lightboxCaption.textContent = description ? `${title} · ${description}` : title;
-    openLightbox();
-  };
-
-  photosList.addEventListener("click", (event) => {
-    const card = event.target.closest(".photo-card");
-    openFromCard(card);
-  });
-
-  photosList.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    const card = event.target.closest(".photo-card");
-    if (!card) return;
-    event.preventDefault();
-    openFromCard(card);
-  });
-};
-
 const initPortraitLightbox = () => {
   const portraitCard = document.querySelector(".portrait-preview");
   if (!(portraitCard instanceof HTMLElement)) return;
@@ -694,9 +631,7 @@ const initArticleLightbox = () => {
 };
 
 renderPosts();
-renderPhotos();
 renderMoments();
 renderPostDetail();
-initPhotoLightbox();
 initPortraitLightbox();
 initArticleLightbox();

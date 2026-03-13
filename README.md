@@ -6,7 +6,7 @@
 
 直接打开 `index.html` 即可。
 
-> 注意：文章和照片列表通过 `fetch` 读取 JSON，本地建议用静态服务器预览（避免部分浏览器 file:// 限制）。
+> 注意：文章和动态列表通过 `fetch` 读取 JSON，本地建议用静态服务器预览（避免部分浏览器 file:// 限制）。
 
 例如：
 
@@ -47,19 +47,6 @@ python3 -m http.server 8080
 }
 ```
 
-### 发布照片
-
-1. 把图片放到项目目录（建议放 `images/`）
-2. 在 `data/photos.json` 添加：
-
-```json
-{
-  "src": "./images/your-photo.jpg",
-  "title": "图片标题",
-  "description": "图片描述"
-}
-```
-
 ## 快速个性化
 
 - 姓名：`index.html` 中 `.logo`、标题和页脚
@@ -81,12 +68,6 @@ npm run new:post -- --title "今天的思考" --summary "一句话摘要" --cont
 npm run new:post -- --title "今天的思考" --summary "一句话摘要" --tags "产品" "工程" --content "第一段" "第二段"
 ```
 
-- 新增照片（自动写入 `data/photos.json`）
-
-```bash
-npm run new:photo -- --src "./images/photo-01.jpg" --title "黄昏街道" --description "下班路上拍到的一束光"
-```
-
 - 新增动态 moments（自动写入 `data/moments.json`）
 
 ```bash
@@ -103,7 +84,6 @@ npm run new:moment -- \
 
 ```bash
 python3 ./scripts/new_post.py --title "..." --summary "..." --tags "标签A" "标签B"
-python3 ./scripts/new_photo.py --src "..." --title "..."
 python3 ./scripts/new_moment.py --text "..." --music-url "..."
 ```
 
@@ -212,7 +192,6 @@ http://127.0.0.1:8080/admin.html
 - `moments.html`：完整动态时间线（音乐/照片）
 - `posts.html`：文章列表
 - `post.html?slug=xxx`：文章详情页
-- `photos.html`：照片墙（支持点击灯箱预览）
 
 ## Moments 展示策略
 

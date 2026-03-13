@@ -22,6 +22,19 @@ def ask_yes_no(prompt: str, default_yes: bool = False) -> bool:
     return value in {"y", "yes"}
 
 
+def ask_multiline(prompt: str) -> str:
+    print(f"{prompt}（支持多行，单独输入 . 并回车结束）")
+    lines: list[str] = []
+    while True:
+        line = input()
+        if line.strip() == ".":
+            break
+        lines.append(line)
+
+    text = "\n".join(lines).strip()
+    return text
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Interactive add moment")
     parser.parse_args()
@@ -29,9 +42,9 @@ def main() -> None:
     today = date.today().isoformat()
 
     print("\n=== 新建动态（Interactive）===")
-    text = ask("动态内容", "").strip()
+    text = ask_multiline("动态内容")
     while not text:
-        text = ask("动态内容不能为空，请重新输入", "").strip()
+        text = ask_multiline("动态内容不能为空，请重新输入")
 
     moment_date = ask("日期 (YYYY-MM-DD)", today)
 

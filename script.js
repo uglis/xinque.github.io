@@ -84,10 +84,10 @@ const renderMarkdownToHtml = (markdown) => {
       return;
     }
 
-    if (/^#{1,3}\s+/.test(line)) {
+    if (/^#{1,6}\s+/.test(line)) {
       closeList();
-      const level = Math.min((line.match(/^#+/) || [""])[0].length, 3);
-      const text = line.replace(/^#{1,3}\s+/, "");
+      const level = Math.min((line.match(/^#+/) || [""])[0].length, 6);
+      const text = line.replace(/^#{1,6}\s+/, "");
       chunks.push(`<h${level}>${parseInlineMarkdown(text)}</h${level}>`);
       return;
     }

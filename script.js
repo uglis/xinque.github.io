@@ -30,7 +30,7 @@ const initThemeControls = () => {
   const controls = document.createElement("div");
   controls.className = "theme-controls";
   controls.innerHTML = `
-    <button type="button" class="theme-mode-toggle" aria-label="切换白天/夜间模式">${currentMode === "light" ? "🌙 夜间" : "☀️ 白天"}</button>
+    <button type="button" class="theme-mode-toggle" aria-label="切换白天/夜间模式">${currentMode === "light" ? "☾" : "☼"}</button>
   `;
 
   const nav = header.querySelector("nav");
@@ -43,10 +43,13 @@ const initThemeControls = () => {
   const modeButton = controls.querySelector(".theme-mode-toggle");
 
   if (modeButton instanceof HTMLButtonElement) {
+    modeButton.setAttribute("aria-label", currentMode === "light" ? "切换到夜间模式" : "切换到白天模式");
+
     modeButton.addEventListener("click", () => {
       currentMode = applyThemeMode(currentMode === "light" ? "dark" : "light");
       window.localStorage.setItem(THEME_MODE_KEY, currentMode);
-      modeButton.textContent = currentMode === "light" ? "🌙 夜间" : "☀️ 白天";
+      modeButton.textContent = currentMode === "light" ? "☾" : "☼";
+      modeButton.setAttribute("aria-label", currentMode === "light" ? "切换到夜间模式" : "切换到白天模式");
     });
   }
 };

@@ -110,7 +110,14 @@ body.modal-open {
   background: rgba(10, 14, 24, 0.72);
   color: var(--text);
   font: inherit;
-  padding: 8px 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 body[data-theme-mode="light"] .theme-mode-toggle {
@@ -927,6 +934,55 @@ section[id] {
 }
 
 @media (max-width: 900px) {
+  .header {
+    border-radius: 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "logo controls"
+      "nav nav";
+    align-items: center;
+    row-gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .logo {
+    grid-area: logo;
+    font-size: 0.96rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 58vw;
+  }
+
+  nav {
+    grid-area: nav;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+  }
+
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  nav a {
+    white-space: nowrap;
+    font-size: 0.84rem;
+    flex: 0 0 auto;
+  }
+
+  .theme-controls {
+    grid-area: controls;
+    width: auto;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+
   .hero-grid {
     grid-template-columns: 1fr;
   }
@@ -955,16 +1011,6 @@ section[id] {
     grid-template-columns: 1fr;
   }
 
-  nav {
-    gap: 12px;
-  }
-
-  .theme-controls {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: 8px;
-  }
-
   .moments-grid {
     padding-left: 18px;
   }
@@ -975,14 +1021,6 @@ section[id] {
 
   .moment-timeline-marker {
     left: -18px;
-  }
-
-  nav a {
-    font-size: 0.86rem;
-  }
-
-  .header {
-    border-radius: 18px;
   }
 
   .admin-grid {

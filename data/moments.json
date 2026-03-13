@@ -1,6 +1,19 @@
 [
   {
     "date": "2026-03-13",
+    "text": "第一条动态",
+    "music": {
+      "platform": "Apple Music",
+      "title": "我是真的爱上你",
+      "url": "https://music.apple.com/cn/album/%E6%88%91%E6%98%AF%E7%9C%9F%E7%9A%84%E7%88%B1%E4%B8%8A%E4%BD%A0-%E5%9B%BD/543844682?i=543844755"
+    },
+    "photo": {
+      "src": "../photos/1.jpeg",
+      "alt": "我是真的爱上你"
+    }
+  },
+  {
+    "date": "2026-03-13",
     "text": "今天循环在听的一首歌，分享给你。",
     "music": {
       "platform": "Apple Music",

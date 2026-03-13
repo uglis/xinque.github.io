@@ -80,11 +80,27 @@ npm run new:moment -- \
   --photo-alt "校园夜色"
 ```
 
+- 交互式新增动态（一步步提问，更省心）
+
+```bash
+npm run new:moment:interactive
+```
+
+运行后会依次询问：
+
+- 动态内容
+- 日期（默认今天）
+- 是否添加音乐（平台 / 标题 / 链接）
+- 是否添加照片（路径 / 描述）
+
+最后自动写入 `data/moments.json`。
+
 如果你不想用 npm，也可以直接：
 
 ```bash
 python3 ./scripts/new_post.py --title "..." --summary "..." --tags "标签A" "标签B"
 python3 ./scripts/new_moment.py --text "..." --music-url "..."
+python3 ./scripts/new_moment_interactive.py
 ```
 
 ### 用 Markdown 发布文章（推荐）

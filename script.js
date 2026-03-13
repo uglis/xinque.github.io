@@ -7,6 +7,7 @@ const postsSearch = document.getElementById("posts-search");
 const postsTags = document.getElementById("posts-tags");
 const postsResultStatus = document.getElementById("posts-result-status");
 const postsFilters = document.querySelector(".posts-filters");
+const momentsList = document.getElementById("moments-list");
 
 const THEME_MODE_KEY = "homepage-theme-mode";
 const THEME_COLOR_KEY = "homepage-theme-color";
@@ -408,6 +409,43 @@ const renderPhotos = async () => {
   }
 };
 
+const renderMoments = async () => {
+  if (!momentsList) return;
+
+  try {
+    const response = await fetch("./data/moments.json");
+    if (!response.ok) throw new Error("moments fetch failed");
+    const moments = await response.json();
+
+    const normalized = Array.isArray(moments) ? moments : [];
+    momentsList.innerHTML = normalized
+      .map((moment) => {
+        const music = moment.music || {};
+        const photo = moment.photo || {};
+
+        return `
+          <article class="moment-card reveal-target visible">
+            <p class="meta">${escapeHtml(moment.date || "未设置日期")}</p>
+            <p class="moment-text">${escapeHtml(moment.text || "")}</p>
+            ${
+              photo.src
+                ? `<img class="moment-photo article-zoomable" src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt || "分享照片")}" loading="lazy" data-article-img-src="${escapeHtml(photo.src)}" data-article-img-title="${escapeHtml(photo.alt || "分享照片")}" data-article-img-description="朋友圈原图" />`
+                : ""
+            }
+            ${
+              music.url
+                ? `<p class="moment-music">🎵 ${escapeHtml(music.platform || "音乐")} · <a class="list-link" href="${escapeHtml(music.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(music.title || "打开链接")}</a></p>`
+                : ""
+            }
+          </article>
+        `;
+      })
+      .join("");
+  } catch (error) {
+    momentsList.innerHTML = '<article class="list-item"><p>动态加载失败，请稍后重试。</p></article>';
+  }
+};
+
 const renderPostDetail = async () => {
   if (!postDetail) return;
 
@@ -647,6 +685,7 @@ const initArticleLightbox = () => {
 
 renderPosts();
 renderPhotos();
+renderMoments();
 renderPostDetail();
 initPhotoLightbox();
 initPortraitLightbox();

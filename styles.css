@@ -435,8 +435,14 @@ h1 {
   width: 100%;
   border-radius: 12px;
   margin: 8px 0 10px;
-  max-height: 440px;
-  object-fit: cover;
+  max-height: min(68vh, 560px);
+  object-fit: contain;
+  object-position: center;
+  background: rgba(8, 12, 20, 0.92);
+}
+
+body[data-theme-mode="light"] .moment-photo {
+  background: #ffffff;
 }
 
 .moment-music {

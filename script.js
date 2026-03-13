@@ -412,7 +412,7 @@ const renderMoments = async () => {
             <p class="moment-text">${escapeHtml(moment.text || "")}</p>
             ${
               photo.src
-                ? `<img class="moment-photo article-zoomable" src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt || "分享照片")}" loading="lazy" data-article-img-src="${escapeHtml(photo.src)}" data-article-img-title="${escapeHtml(photo.alt || "分享照片")}" data-article-img-description="朋友圈原图" />`
+                ? `<img class="moment-photo article-zoomable" src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt || "分享照片")}" loading="lazy" tabindex="0" role="button" aria-label="查看原图：${escapeHtml(photo.alt || "分享照片")}" data-article-img-src="${escapeHtml(photo.src)}" data-article-img-title="${escapeHtml(photo.alt || "分享照片")}" data-article-img-description="朋友圈原图" />`
                 : ""
             }
             ${
@@ -591,7 +591,7 @@ const initPortraitLightbox = () => {
 };
 
 const initArticleLightbox = () => {
-  if (!postDetail) return;
+  if (!postDetail && !momentsList) return;
 
   const { lightbox, openLightbox } = ensureLightbox();
   const lightboxImage = lightbox.querySelector(".lightbox-image");
@@ -612,22 +612,29 @@ const initArticleLightbox = () => {
     openLightbox();
   };
 
-  postDetail.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    const image = target.closest(".article-zoomable");
-    openFromImage(image);
-  });
+  const bindContainer = (container) => {
+    if (!(container instanceof HTMLElement)) return;
 
-  postDetail.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    const image = target.closest(".article-zoomable");
-    if (!image) return;
-    event.preventDefault();
-    openFromImage(image);
-  });
+    container.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const image = target.closest(".article-zoomable");
+      openFromImage(image);
+    });
+
+    container.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const image = target.closest(".article-zoomable");
+      if (!image) return;
+      event.preventDefault();
+      openFromImage(image);
+    });
+  };
+
+  bindContainer(postDetail);
+  bindContainer(momentsList);
 };
 
 renderPosts();

@@ -120,6 +120,16 @@ body.modal-open {
   line-height: 1;
 }
 
+.theme-mode-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
 body[data-theme-mode="light"] .theme-mode-toggle {
   background: rgba(255, 255, 255, 0.96);
 }

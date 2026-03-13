@@ -19,6 +19,22 @@ const applyThemeMode = (mode) => {
 
 const getSystemThemeMode = () => (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
 
+const getThemeIcon = (mode) => {
+  if (mode === "light") {
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4.5V2.5M12 21.5v-2M6.35 6.35 4.93 4.93m14.14 14.14-1.42-1.42M4.5 12h-2m19 0h-2M6.35 17.65l-1.42 1.42m14.14-14.14-1.42 1.42M12 16.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" />
+      </svg>
+    `;
+  }
+
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 15.2A8 8 0 1 1 8.8 5 6.5 6.5 0 1 0 19 15.2Z" />
+    </svg>
+  `;
+};
+
 const initThemeControls = () => {
   const header = document.querySelector(".header");
   if (!(header instanceof HTMLElement)) return;
@@ -30,7 +46,7 @@ const initThemeControls = () => {
   const controls = document.createElement("div");
   controls.className = "theme-controls";
   controls.innerHTML = `
-    <button type="button" class="theme-mode-toggle" aria-label="切换白天/夜间模式">${currentMode === "light" ? "☾" : "☼"}</button>
+    <button type="button" class="theme-mode-toggle" aria-label="切换白天/夜间模式">${getThemeIcon(currentMode)}</button>
   `;
 
   const nav = header.querySelector("nav");
@@ -48,7 +64,7 @@ const initThemeControls = () => {
     modeButton.addEventListener("click", () => {
       currentMode = applyThemeMode(currentMode === "light" ? "dark" : "light");
       window.localStorage.setItem(THEME_MODE_KEY, currentMode);
-      modeButton.textContent = currentMode === "light" ? "☾" : "☼";
+      modeButton.innerHTML = getThemeIcon(currentMode);
       modeButton.setAttribute("aria-label", currentMode === "light" ? "切换到夜间模式" : "切换到白天模式");
     });
   }
